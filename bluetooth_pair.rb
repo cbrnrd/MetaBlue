@@ -24,32 +24,36 @@ class MetasploitModule < Msf::Auxiliary
 
   end
 
-  VALID_MAC = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/  # TODO test this more
+  VALID_MAC = /^([0-9a-fA-F]{2}[:-]){5}[0-9a-fA-F]{2}$/i  # TODO test this more
 
   def run
 
     address = datastore['MAC_ADDR']
 
     # Check MAC
-    if address =~ VALID_MAC
+    if !(address =~ VALID_MAC)
       print_error("#{address} is not a valid MAC address!")
       return
     end
 
     device = Bluetooth::Device.new address
 
-    device.pair_confirmation do |num|
-      vprint_status('Addempting initial connection, message incoming.')
-      print_status("The device should say #{num}")
-      true
-    end
+    begin
+      device.pair_confirmation do |num|
+        vprint_status('Addempting initial connection, message incoming.')
+        print_status("The device should say #{num}")
+        true
+      end
 
-    paired = device.pair ? true : false
+      paired = device.pair ? true : false
 
-    if paired
-      print_good('Pairing successful!')
-    else
-      print_error('Pairing unsuccessful.')
+      if paired
+        print_good('Pairing successful!')
+      else
+        print_error('Pairing unsuccessful.')
+      end
+    rescue Bluetooth::AuthenticationFailureError
+      print_error('Authentication failed. Client cancelled the pair or was not listening. Try again.')
     end
 
   end
