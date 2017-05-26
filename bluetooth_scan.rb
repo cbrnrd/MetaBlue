@@ -3,8 +3,8 @@
 # Current source: https://github.com/rapid7/metasploit-framework
 ##
 
-require 'msf/core'
 require 'bluetooth'
+require 'louis'
 
 class MetasploitModule < Msf::Auxiliary
 
@@ -20,6 +20,10 @@ class MetasploitModule < Msf::Auxiliary
 
   end
 
+  def vendor(mac)
+    Louis.lookup(mac)['long_vendor']
+  end
+
   def run
 
     print_status('Beginning scan...')
@@ -27,7 +31,8 @@ class MetasploitModule < Msf::Auxiliary
     devices = Bluetooth.scan
 
     devices.each do |id|
-      print_good("Device found: #{id}")
+      mac = id.to_s.split(' ')[2]
+      print_good("Device found: #{id} (#{vendor(mac)})")
     end
   end
 
