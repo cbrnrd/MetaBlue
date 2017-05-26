@@ -24,7 +24,7 @@ class MetasploitModule < Msf::Auxiliary
 
   end
 
-  VALID_MAC = /^([0-9a-fA-F]{2}[:-]){5}[0-9a-fA-F]{2}$/i  # TODO test this more
+  VALID_MAC = /^([0-9a-fA-F]{2}[:-]){5}[0-9a-fA-F]{2}$/i
 
   def run
 
@@ -36,11 +36,18 @@ class MetasploitModule < Msf::Auxiliary
       return
     end
 
+    vprint_status('Switching MAC to dashed notation') if address.include? ':'
+
+    # the gem only supports dashed for some reason
+    address.gsub!(':', '-')
+
+    vprint_status('Addempting initial connection...')
+
     device = Bluetooth::Device.new address
 
     begin
       device.pair_confirmation do |num|
-        vprint_status('Addempting initial connection, message incoming.')
+        vprint_status('Sending confirmation')
         print_status("The device should say #{num}")
         true
       end
