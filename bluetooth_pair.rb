@@ -12,6 +12,8 @@ class MetasploitModule < Msf::Auxiliary
       'Name'           => 'Bluetooth Simple Pair',
       'Description'    => %q{
         This module simply pairs over Bluetooth with a target device.
+        If this machine had previously paired with the target, the
+        message on the target will not appear.
       },
       'Author'         => [ 'Carter Brainerd <cbrnrd>' ],
       'License'        => MSF_LICENSE
